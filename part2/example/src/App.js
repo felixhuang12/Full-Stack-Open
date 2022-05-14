@@ -4,7 +4,7 @@ import Note from './components/Note' // location given in relation to importing 
 // https://fullstackopen.com/en/part1/component_state_event_handlers#destructuring
 
 
-const App = (props) => { 
+const App = () => { 
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('a new note')
   const [showAll, setShowAll] = useState(true)

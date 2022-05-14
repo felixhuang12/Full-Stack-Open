@@ -1,0 +1,32 @@
+~~~NOTES
+-axios is a library to communicate between browser and server
+-fetch is also nice to use; promise based function to pull data from server
+
+~~~Promises
+A Promise is an object representing the eventual completion or failure of an asynchronous operation.
+
+In other words, a promise is an object that represents an asynchronous operation. A promise can have three distinct states:
+
+The promise is pending: It means that the final value (one of the following two) is not available yet.
+The promise is fulfilled: It means that the operation has been completed and the final value is available, which generally is a successful operation. This state is sometimes also called resolved.
+The promise is rejected: It means that an error prevented the final value from being determined, which generally represents a failed operation.
+
+~~~ Effect Hook
+The Effect Hook lets you perform side effects on function components. 
+Data fetching, setting up a subscription, and manually changing the DOM in React 
+components are all examples of side effects.
+- two parameters:
+    - first: function/effect itself: run after every completed render
+        - can choose to fire it only when certain values have changed
+    - second: specify how often effect is run
+        - [] implies effect only run along with the first render of the component
+
+~~~COMMANDS
+npm install axios
+-installs axios as a runtime dependency of application
+(i.e. execution of program requires existence of the axios library)
+
+npm install json-server --save-dev
+-installs json-server as a development dependency
+-program itself doesn't require it
+

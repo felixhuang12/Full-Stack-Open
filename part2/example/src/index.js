@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import axios from 'axios'
 
 import App from './App'
 const notes = [
@@ -49,5 +48,5 @@ const notes = [
 // console.log(promise2)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <App notes={notes} />
+  <App />
 )
