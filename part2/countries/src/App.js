@@ -8,8 +8,8 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   const data = () => {
-    axios.get('https://restcountries.com/v3.1/all').then(response => {
-      console.log(response[0].name.common)
+    axios.get('https://restcountries.com/v3.1/all').then(res => {
+      console.log(res)
     })
   }
 
