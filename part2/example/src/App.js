@@ -1,11 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect} from 'react'
+import axios from 'axios'
 import Note from './components/Note' // location given in relation to importing file (e.g. App.js in this case)
 // https://fullstackopen.com/en/part1/component_state_event_handlers#destructuring
+
+
 const App = (props) => { 
-  const [notes, setNotes] = useState(props.notes)
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('a new note')
   const [showAll, setShowAll] = useState(true)
-  
+
+  const hook = () => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/notes')
+      .then(response => {
+        console.log('promise fulfilled')
+        setNotes(response.data)
+      })
+  }
+  useEffect(hook, [])
+  console.log('render', notes.length, 'notes')
+//output ^ ::
+//render 0 notes // printed first time component is rendered
+// effect // body of function useEffect is immediately executed after rendering
+// promise fulfilled // printed after data arrives from server
+// render 3 notes // setNotes() updates state of notes -> triggers rerendering of component
+
   // addNote is event handler
   const addNote = (event) => {
     event.preventDefault() // prevents default action of submitting a form; page would otherwise reload among other things
