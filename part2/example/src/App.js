@@ -1,8 +1,6 @@
 import { useState, useEffect} from 'react'
-import axios from 'axios'
 import Note from './components/Note' // location given in relation to importing file (e.g. App.js in this case)
-// https://fullstackopen.com/en/part1/component_state_event_handlers#destructuring
-
+import noteService from './services/notes'
 
 const App = () => { 
   const [notes, setNotes] = useState([])
@@ -11,11 +9,10 @@ const App = () => {
 
   const hook = () => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/notes')
+    noteService
+      .getAll()
       .then(response => {
-        console.log('promise fulfilled')
-        setNotes(response.data)
+        setNotes(response)
       })
   }
   useEffect(hook, [])
@@ -25,7 +22,23 @@ const App = () => {
 // effect // body of function useEffect is immediately executed after rendering
 // promise fulfilled // printed after data arrives from server
 // render 3 notes // setNotes() updates state of notes -> triggers rerendering of component
-
+  const toggleImportanceOf = id => {
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+    // notes.map() returns copy of array where old items are same
+    // with the wanted note of specified ID changed
+    noteService
+      .update(id, changedNote)
+      .then(response => {
+        setNotes(notes.map(note => note.id !== id ? note : response))
+      })
+      .catch(error => {
+        alert(
+          `the note '${note.content}' was already deleted from server`
+        )
+        setNotes(notes.filter(n => n.id !== id))
+      })
+  }
   // addNote is event handler
   const addNote = (event) => {
     event.preventDefault() // prevents default action of submitting a form; page would otherwise reload among other things
@@ -35,9 +48,12 @@ const App = () => {
       important: Math.random() < 0.5,
       id: notes.length + 1,
     }
-  
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
+    noteService
+      .create(noteObject)
+      .then(response => {
+        setNotes(notes.concat(response))
+        setNewNote('')
+      })
   }
   // event handler for changes in input
   const handleNoteChange = (event) => {
@@ -60,7 +76,7 @@ const App = () => {
       </div>
       <ul>
       {notesToShow.map(note => // forEach note, put note.content in <li></li> tags
-          <Note key={note.id} note={note} />
+          <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)}/>
         )}
       </ul>
       <form onSubmit={addNote}>

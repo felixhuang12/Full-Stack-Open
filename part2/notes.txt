@@ -21,6 +21,14 @@ components are all examples of side effects.
     - second: specify how often effect is run
         - [] implies effect only run along with the first render of the component
 
+~~~ object
+export default { getAll, create, update }
+is the same as { 
+        getAll: getAll, 
+        create: create, 
+        update: update 
+    }
+
 ~~~COMMANDS
 npm install axios
 -installs axios as a runtime dependency of application
@@ -29,4 +37,11 @@ npm install axios
 npm install json-server --save-dev
 -installs json-server as a development dependency
 -program itself doesn't require it
+-run at root of application
+
+npm run server
+-run this after previous command and adding to "scripts" part in package.json
+"server": "json-server -p3001 --watch db.json"
+p3001 is because p3000 is usually taken (e.g. by create-react-app)
+-run at root of application
 

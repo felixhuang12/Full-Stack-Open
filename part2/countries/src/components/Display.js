@@ -3,7 +3,7 @@ import Name from './Name'
 import Country from './Country'
 
 const Display = ({countries, setCountries}) => {
-    // console.log(countries);
+    //console.log(countries);
     if (countries.length > 10){
         return (
             <div>
