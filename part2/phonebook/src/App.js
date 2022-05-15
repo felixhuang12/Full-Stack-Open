@@ -34,24 +34,51 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const personObj = {
-      name: newName,
-      number: newNumber, 
-      id: persons.length+1
-    }
-    let checker = true
-    persons.forEach(obj => personObj.number !== obj.number ? checker = false : checker = true)
-    if (checker) {
-      alert(`A person with phone number ${newNumber} is already in the phonebook.`)
+    const obj = persons.find(person => person.name === newName)
+    if (obj){
+      const changedObj = {...obj, number: newNumber}
+      updateNumber(changedObj)
     }
     else {
-      personService.create(personObj).then(response => {
-        setPersons(persons.concat(response))
-        setNewName('')
-        setNewNumber('')
-        setFilter('')
-      })
+      const personObj = {
+        name: newName,
+        number: newNumber, 
+        id: persons.length+1
+      }
+      let checker = true
+      persons.forEach(obj => personObj.number !== obj.number ? checker = false : checker = true)
+      if (checker) {
+        alert(`A person with phone number ${newNumber} is already in the phonebook.`)
+      }
+      else {
+        personService.create(personObj).then(response => {
+          setPersons(persons.concat(response))
+          setNewName('')
+          setNewNumber('')
+          setFilter('')
+        })
+      }
     }
+  }
+
+  const updateNumber = (obj) => {
+    personService
+      .update(obj.id, obj)
+        .then(response => {
+          if (response){
+            setPersons(persons
+              .map(person => person.id !== obj.id ? person : response))
+          }
+        })
+        .catch(e => {
+          alert(
+            `The person '${obj.name}' was already deleted from server`
+          )
+          setPersons(persons.filter(n => n.id !== obj.id))
+        })
+    setNewName('')
+    setNewNumber('')
+    setFilter('')
   }
 
   const deletePerson = (id) => {

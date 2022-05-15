@@ -12,8 +12,12 @@ const create = (newPerson) => {
 }
 
 const update = (id, newPerson) => {
-    const request = axios.put(`${url}/${id}`, newPerson)
-    return request.then(response => response.data)
+    if (window.confirm(
+        `${newPerson.name} is already added to phonebook. Replace the old number with a new one?`))
+        {
+            const request = axios.put(`${url}/${id}`, newPerson)
+            return request.then(response => response.data)
+    }
 }
 
 const deletePerson = (id) => {
