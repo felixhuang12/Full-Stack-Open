@@ -3,12 +3,14 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   const hook = () => {
     personService
@@ -56,6 +58,10 @@ const App = () => {
           setNewName('')
           setNewNumber('')
           setFilter('')
+          setMessage('Success')
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
         })
       }
     }
@@ -69,11 +75,16 @@ const App = () => {
             setPersons(persons
               .map(person => person.id !== obj.id ? person : response))
           }
+          setMessage('Success')
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
         })
         .catch(e => {
-          alert(
-            `The person '${obj.name}' was already deleted from server`
-          )
+          setMessage(`The person '${obj.name}' was already deleted from server`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
           setPersons(persons.filter(n => n.id !== obj.id))
         })
     setNewName('')
@@ -93,6 +104,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filter={filter} filtChange={filtChange} />
       <h3>Add a new person</h3>
       <PersonForm addPerson={addPerson} newName={newName} newNum={newNumber}
