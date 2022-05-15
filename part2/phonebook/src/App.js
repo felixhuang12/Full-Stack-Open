@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import axios from 'axios'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,11 +11,11 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   const hook = () => {
-    axios.get('http://localhost:3001/persons').then(
-      response => {
-        setPersons(response.data)
-      }
-    )
+    personService
+      .getAll()
+        .then(response => 
+          setPersons(response)
+        )
   }
 
   useEffect(hook, [])
@@ -45,12 +45,24 @@ const App = () => {
       alert(`A person with phone number ${newNumber} is already in the phonebook.`)
     }
     else {
-      setPersons(persons.concat(personObj))
+      personService.create(personObj).then(response => {
+        setPersons(persons.concat(response))
+        setNewName('')
+        setNewNumber('')
+        setFilter('')
+      })
+    }
+  }
+
+  const deletePerson = (id) => {
+    personService.deletePerson(id).then(() => {
+      setPersons(persons.filter(n => n.id !== id))
       setNewName('')
       setNewNumber('')
       setFilter('')
-    }
+    })
   }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -59,7 +71,7 @@ const App = () => {
       <PersonForm addPerson={addPerson} newName={newName} newNum={newNumber}
       nameFormChange={nameFormChange} numFormChange={numFormChange}/>
       <h3>Numbers</h3>
-      <Persons filter={filter} persons={persons} />
+      <Persons filter={filter} persons={persons} deletePerson={deletePerson} />
     </div>
   )
 }
