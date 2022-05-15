@@ -1,11 +1,27 @@
 import { useState, useEffect} from 'react'
 import Note from './components/Note' // location given in relation to importing file (e.g. App.js in this case)
 import noteService from './services/notes'
+import Notification from './components/Notification'
+
+const Footer = () => {
+  const footerStyle = {
+    color: 'green',
+    fontStyle: 'italic',
+    fontSize: 16
+  }
+  return (
+    <div style={footerStyle}>
+      <br />
+      <em>©2022</em>
+    </div>
+  )
+}
 
 const App = () => { 
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('a new note')
   const [showAll, setShowAll] = useState(true)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const hook = () => {
     console.log('effect')
@@ -33,9 +49,12 @@ const App = () => {
         setNotes(notes.map(note => note.id !== id ? note : response))
       })
       .catch(error => {
-        alert(
-          `the note '${note.content}' was already deleted from server`
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
         )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
         setNotes(notes.filter(n => n.id !== id))
       })
   }
@@ -69,6 +88,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
+      <Notification message={errorMessage} />
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all' }
@@ -83,6 +103,7 @@ const App = () => {
         <input value={newNote} onChange={handleNoteChange}/>
         <button type="submit">save</button>
       </form>
+      <Footer />
     </div> // wrapped in curly braces b/c function parameter passsed to map method is used to create view elements
   )
 }
