@@ -53,3 +53,15 @@ npm install --save-dev nodemon
 - shorthand for starting app:
     - first define "dev": "nodemon index.js" in scripts as npm script
     - then use npm run dev command
+
+~~~ Middleware
+- functions that can be used for handling request and response objects
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
