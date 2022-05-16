@@ -1,0 +1,55 @@
+rm -rf .git
+
+Modules
+- Node.js uses CommonJS modules that are used via statements like
+    - const http = require('http')
+- code that runs in browser use ES6 modules (import, export statements)
+
+~~~ Code
+const app = http.createServer((request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/plain' })
+  response.end('Hello World')
+})
+// event handler applied to createServer is called every time an HTTP request
+// is made to server's address http://localhost:3001.
+// request responded to with status code 200 w/ Content-Type header set to text/plain
+// content of site to be returned is set to Hello World
+
+const PORT = 3001
+app.listen(PORT)
+console.log(`Server running on port ${PORT}`)
+// http server binded to app variable to listen to HTTP requests sent to port 3001
+
+// handle all HTTP GET requests of form /api/notes/SOMETHING
+  // something is arbitary string
+  app.get('/api/notes/:id', (request, response) => {
+    const id = request.params.id
+    const note = notes.find(note => note.id === id)
+    response.json(note)
+  })
+
+response.status(404).end()
+- status method sets status to 404
+- end method responds to request without sending any data
+
+~~~ Dependencies
+"dependencies": {
+    "express": "^4.18.1"
+}
+- format: major/minor/patch
+- caret means that  if and when the dependencies of a project are updated, 
+the version of express that is installed will be at least 4.18.1,
+but install version of express can also be one that has a larger patch or minor
+number; major number is same
+
+~~~ JSON
+- JSON is a string, not a JavaScript object
+- '{"name": "Arto", "age": 35}' vs. { name: 'Arto', age: 35}
+
+~~~ Nodemon
+npm install --save-dev nodemon
+- install as development dependency
+- start app: node_modules/.bin/nodemon index.js
+- shorthand for starting app:
+    - first define "dev": "nodemon index.js" in scripts as npm script
+    - then use npm run dev command
