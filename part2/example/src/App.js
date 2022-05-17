@@ -77,7 +77,6 @@ const App = () => {
   // event handler for changes in input
   const handleNoteChange = (event) => {
     // no event.preventDefault() bc no default action occurs on input change
-    console.log(event.target.value)
     setNewNote(event.target.value)
   }
 

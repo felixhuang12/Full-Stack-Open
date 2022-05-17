@@ -65,3 +65,9 @@ const requestLogger = (request, response, next) => {
 }
 
 app.use(requestLogger)
+
+~~~ CORS - Cross-origin resource sharing
+- restricted for security reasons
+- basically, cannot communicate requests of app running in browser
+of one origin to a server of different origin
+- use Node's cors middleware to allow access to different origins
