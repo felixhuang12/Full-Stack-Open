@@ -1,6 +1,20 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const mongoose = require('mongoose')
+
+const url =
+  `mongodb+srv://felixhuang12:Flyingstar123@cluster0.o1opl.mongodb.net/noteApp?retryWrites=true&w=majority`
+
+mongoose.connect(url)
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean,
+})
+
+const Note = mongoose.model('Note', noteSchema)
 
 // middlewares
 app.use(express.json()) // json-parser implemented
