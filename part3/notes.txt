@@ -63,6 +63,25 @@ const requestLogger = (request, response, next) => {
   console.log('---')
   next()
 }
+- error handlers: middlware defined with a function that accepts four parameters
+- execution order of middleware is the same as order they are loaded into express
+w/ app.use function
+-app.use(express.json()) aka json-parser should be first middleware loaded
+
+Code:
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  - CastError implies error was caused by invalid object id for Mongo
+
+  next(error)
+}
+
+// this has to be the last loaded middleware.
+app.use(errorHandler)
 
 app.use(requestLogger)
 

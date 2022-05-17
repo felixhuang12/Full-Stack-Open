@@ -98,6 +98,10 @@ const App = () => {
       setNewName('')
       setNewNumber('')
       setFilter('')
+      setMessage('Success')
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
     })
   }
 
