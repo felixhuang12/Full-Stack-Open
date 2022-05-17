@@ -2,9 +2,10 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 
+// middlewares
 app.use(express.json()) // json-parser implemented
-// json-parser is middleware
 app.use(cors())
+app.use(express.static('build'))
 
 let notes = [
     {
