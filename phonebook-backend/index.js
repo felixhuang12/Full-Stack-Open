@@ -22,10 +22,10 @@ app.use(express.static('build'))
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
         response.json(persons)
-    })
+    }).catch(err => next(err))
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
     const currentDate = new Date().toLocaleString();
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     Person.find({}).then(persons => {
@@ -33,7 +33,7 @@ app.get('/info', (request, response) => {
         <p>Phonebook has info for ${persons.length} people</p>
         <p>${currentDate} (${timeZone})</p>
         </div>`)
-    })
+    }).catch(err => next(err))
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -44,12 +44,10 @@ app.get('/api/persons/:id', (req, res, next) => {
         else{
             res.status(404).end()
         }
-    }).catch(err => {
-        next(err)
-    })
+    }).catch(err => next(err))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
     console.log(body)
     if (!(body.name && body.number)){
@@ -67,7 +65,7 @@ app.post('/api/persons', (req, res) => {
         console.log(`Added ${person.name} with number ${person.number} to phonebook`)
         console.log(savedPerson)
         res.json(savedPerson)
-    })
+    }).catch(err => next(err))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -78,9 +76,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
         else{
             res.status(204).end()
         }
-    }).catch(err => {
-        next(err)
-    })
+    }).catch(err => next(err))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -90,13 +86,12 @@ app.put('/api/persons/:id', (req, res, next) => {
         number: body.number
     }
 
-    Person.findByIdAndUpdate(req.params.id, updatedPerson, {new: true})
+    Person.findByIdAndUpdate(req.params.id, updatedPerson, 
+        {new: true, runValidators: true, context: 'query'})
         .then(result => {
             console.log(result)
             res.json(result)
-    }).catch(err => {
-        next(err)
-    })
+    }).catch(err => next(err))
 })
 
 const unknownEndpoint = (request, res) => {
@@ -105,11 +100,17 @@ const unknownEndpoint = (request, res) => {
   
 app.use(unknownEndpoint)
 
-const errorHandler = (err, req, res, next) => {
-    if (err.name === 'CastError'){
+const errorHandler = (error, req, res, next) => {
+    if (error.name === 'CastError'){
+        console.log(error.message)
         return res.status(400).send({error: 'Malformatted id'})
     }
-    next(err)
+    else if (error.name === 'ValidationError'){
+        console.log(error.message)
+        return res.status(400).send(error.message) // or return error in JSON format:
+        // res.status(400).json(error: {error.message})
+    }
+    next(error)
 }
 app.use(errorHandler)
 
