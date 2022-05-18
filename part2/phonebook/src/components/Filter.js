@@ -2,7 +2,7 @@ import React from 'react'
 
 const Filter = ({filter, filtChange}) => {
     return (
-      <div>filter shown with: <input value={filter} onChange={filtChange} /></div>
+      <div>Filter by name: <input value={filter} onChange={filtChange} /></div>
     )
 }
 

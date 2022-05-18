@@ -90,3 +90,6 @@ app.use(requestLogger)
 - basically, cannot communicate requests of app running in browser
 of one origin to a server of different origin
 - use Node's cors middleware to allow access to different origins
+
+~~~ Deploy database backend to production
+heroku config:set MONGODB_URI='mongodb+srv://felixhuang12:Flyingstar123@cluster0.ffjo3.mongodb.net/phonebook?retryWrites=true&w=majority'
