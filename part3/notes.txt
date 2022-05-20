@@ -68,6 +68,8 @@ const requestLogger = (request, response, next) => {
 - execution order of middleware is the same as order they are loaded into express
 w/ app.use function
 -app.use(express.json()) aka json-parser should be first middleware loaded
+- At the end of the function body the "next" function that was passed as a 
+parameter is called. The "next" function yields control to the next middleware
 
 Code:
 const errorHandler = (error, request, response, next) => {
@@ -261,3 +263,80 @@ heroku config:set MONGODB_URI="mongodb+srv://felixhuang12:Flyingstar123@cluster0
   - password hash generation:
     - npm install bcrypt
   - comply with RESTful conventions by making HTTP post request to users path
+- populate:
+  - Mongoose's built "JOIN" query method
+  - not transactional unlike in relational databases, meaning nothing can 
+    guarantee that the state between the collections being joined is consistent,
+    meaning that if we make a query that joins the user and notes collections, 
+    the state of the collections may change during the query.
+  - first parameter: document property that you want to replace with what it's
+    referencing
+      - e.g. 
+          const users = await User
+            .find({}).populate('notes')
+          
+          The parameter given to the populate method defines that the ids 
+          referencing note objects in the notes field of the user document 
+          will be replaced by the referenced note documents.
+  - second parameter: selection of fields you want to include from documents
+    (optional)
+      - e.g. 
+          usersRouter.get('/', async (request, response) => {
+            const users = await User
+              .find({}).populate('notes', { content: 1, date: 1 })
+
+            response.json(users)
+          });
+  - The functionality of the populate method of Mongoose is based on the fact 
+    that we have defined "types" to the references in the Mongoose schema with 
+    the ref option
+
+~~~ Token Authentication
+Overview:
+- User starts by logging in using a login form implemented with React
+  - We will add the login form to the frontend in part 5
+- This causes the React code to send the username and the password to the 
+  server address /api/login as a HTTP POST request.
+- If the username and the password are correct, the server generates a token 
+  which somehow identifies the logged in user.
+  - The token is signed digitally, making it impossible to falsify (with 
+    cryptographic means)
+- The backend responds with a status code indicating the operation was 
+  successful, and returns the token with the response.
+- The browser saves the token, for example to the state of a React application.
+- When the user creates a new note (or does some other operation requiring 
+  identification), the React code sends the token to the server with the request.
+- The server uses the token to identify the user
+
+- npm install jsonwebtoken
+  - allows us to generate JSON web tokens
+
+Verifying user:
+- search user in db by username attached to login request
+- check password attached to request
+- use bcrypt.compare method to check if password is correct
+- if user not found or password incorrect -> send 401 unauthorized response
+
+Token generation: if password is correct
+  - create token via jwt.sign method
+    - token contains username and user id in digitally signed form
+  - e.g. 
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      }
+
+      const token = jwt.sign(userForToken, process.env.SECRET)
+- digital signature ensures that only parties who know the secret can
+  generate a valid token
+    - SECRET must be set in .env file
+      - can be any string
+
+Sending token from browser to server:
+- use Authorization header
+- Bearer authorization scheme is suitable -> access to OAuth 2.0 protected 
+  resources
+- validity of token is checked with jwt.verify
+  - method also decodes token -> returns Object which token was based on
+    - decoded object contains username and id fields
+
