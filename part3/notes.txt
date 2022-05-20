@@ -1,11 +1,12 @@
 rm -rf .git
+- removes git repo created at root directory
 
 Modules
 - Node.js uses CommonJS modules that are used via statements like
     - const http = require('http')
 - code that runs in browser use ES6 modules (import, export statements)
 
-~~~ Code
+~~~ Setting up server and handling requests
 const app = http.createServer((request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/plain' })
   response.end('Hello World')
@@ -95,7 +96,168 @@ of one origin to a server of different origin
 heroku config:set MONGODB_URI="mongodb+srv://felixhuang12:Flyingstar123@cluster0.ffjo3.mongodb.net/phonebook?retryWrites=true&w=majority"
 - MAKE SURE TO SET NETWORK ACCESS TO DB FROM ANYWHERE IN MONGODB
 
+~~~ Serving static files from backend
+- one option for deploying frontend is to copy production build to root of
+  backend repo and configure backend to show frontend's main page (build/index.html)
+- backend requires express to show static content (index.html + JS) -> middleware needed
+  - app.use(express.static('build'))
+- result:
+  - whenever express gets an HTTP GET request it will first check if the build 
+    directory contains a file corresponding to the request's address. If a 
+    correct file is found, express will return it.
+  - Now HTTP GET requests to the address www.serversaddress.com/index.html or 
+    www.serversaddress.com will show the React frontend. GET requests to the 
+    address www.serversaddress.com/api/notes will be handled by the backend's 
+    code.
+  - Because of our situation, both the frontend and the backend are at the same 
+    address, we can declare baseUrl as a relative URL. This means we can leave 
+    out the part declaring the server.
+
 ~~~ Lint
 - any tool that detects and flags errors in programming languages, including stylistic errors
 - lint-like behavior sometimes applied to process of flagging suspicious language usage
 - lint-like tools generally perform static analysis of source code
+
+~~~ Router object
+- isolated instance of middleware and routes
+- "mini-application" that can only perform middleware and routing functions
+- every Express app has a built-in router
+
+                          ~~~ New structure of project
+- controllers -> directory where event handlers of routes are (notes.js)
+  - almost identical to previous index.js file except urls are changed to be 
+    relative to /api/notes and separate router object is created
+- logger.js streamlines printing of log and error messages
+- index.js only responsibility is to import actual app from app.js and start it
+- config.js handles environment variables
+  - other parts of app can access environment variables by importing
+    - e.g.: const config = require('./utils/config')
+            logger.info(`Server running on port ${config.PORT}`)
+- middleware.js contains all custom middleware
+- app.js establishes connection database
+- note.js changed to only handle definition of Mongoose schema
+  - connection to db given to app.js
+
+~~~ Unit testing
+- jest tool created by Facebook
+- install as development dependency
+- testing specific notes:
+  - npm test -- tests/note_api.test.js
+    - runs tests only found in note_api.test.js
+  - npm run test -- -t "a specific note is within the returned notes"
+    - runs tests found with that specific name
+  - npm test -- -t 'notes'
+    - runs all tests found with 'notes' in their name
+
+~~~ Integration testing: testing the backend
+- package.json:
+  - NODE_ENV environment variable definitions in production mode
+    - before, environment variables loaded in development in .env file
+  - runInBand option to test script prevents jest from running tests in parallel
+  - cross-env enables app to work in Windows
+    - use npm i cross-env -P when deploying to Heroku so it is defined for production
+- creation of locally stored test database:
+  - running Mongo in-memory or use Docker containers
+  - for sake of simplicity, MongoDB Atlas database used for test
+- supertest package: development dependency
+  - tests API
+  - takes care that the app being tested is started at port it uses internally
+    - so need to configure port manually in app.js (fine to leave in index.js)
+
+~~~ RegEx expressions
+- \ indicates following character is special
+
+~~~ async/await
+- alternative to promises
+- makes code cleaner
+- async declares a function asynchronous
+- await ensures that execution of code will stop temporarily until the code
+  following the await keyword finishes
+- error handling (since got rid of catch statement from promises):
+  - try/catch mechanism:
+    - e.g.
+        notesRouter.post('/', async (request, response, next) => {
+          const body = request.body
+
+          const note = new Note({
+            content: body.content,
+            important: body.important || false,
+            date: new Date(),
+          })
+          try {
+            const savedNote = await note.save()
+            response.status(201).json(savedNote)
+          } catch(exception) {
+            next(exception)
+          }
+        })
+- if async loop is defined inside async function:
+  - function will not wait for loop to finish since asynchronousity of loop
+    does not belong to function
+      - e.g. 
+          beforeEach(async () => {
+            await Note.deleteMany({})
+            console.log('cleared')
+
+            helper.initialNotes.forEach(async (note) => {
+              let noteObject = new Note(note)
+              await noteObject.save()
+              console.log('saved')
+            })
+            console.log('done')
+          })
+  - fix:
+    - wait for all asynchronous operations to finish with Promise.all method
+      - e.g. 
+          beforeEach(async () => {
+            await Note.deleteMany({})
+
+            const noteObjects = helper.initialNotes
+              .map(note => new Note(note))
+            const promiseArray = noteObjects.map(note => note.save())
+            await Promise.all(promiseArray)
+          })
+      - Promise.all exceutes promises it receives in parallel
+    - if specific order is needed, use a for...of block
+      - e.g.
+          beforeEach(async () => {
+            await Note.deleteMany({})
+
+            for (let note of helper.initialNotes) {
+              let noteObject = new Note(note)
+              await noteObject.save()
+            }
+          })
+
+
+~~~ viewing notes during testing:
+- need to convert object being viewed to JSON format
+- JSON.parse(JSON.stringify(obj))
+  - parse: converts JSON string into JSON format
+  - stringify: converts JS object into JSON string
+
+~~~ npm install express-async-errors
+- used to eliminate catch from methods when refactoring code
+- library handles everything under the hood:
+  - if exception occurs in async route, the execution is automatically passed
+    to error handling middleware
+
+~~~ User administration
+- relational databases:
+  - id of users who create a document is stored in separate database as documents
+    and id is stored as foreign key in database of documents
+- document databases:
+  - save id of users to separate collectino in same database
+  - traditionally do not support JOIN queries available in relational databases
+- Mongoose schema for users:
+  - references to user in noteSchema
+    - e.g.
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User'
+        }
+  - references to notes in userSchema
+- creating users:
+  - password hash generation:
+    - npm install bcrypt
+  - comply with RESTful conventions by making HTTP post request to users path
