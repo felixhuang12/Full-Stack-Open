@@ -19,7 +19,7 @@ components are all examples of side effects.
     - first: function/effect itself: run after every completed render
         - can choose to fire it only when certain values have changed
     - second: specify how often effect is run
-        - [] implies effect only run along with the first render of the component
+        - [] implies effect only executed when component is rendered for first time
 
 ~~~ object
 export default { getAll, create, update }
@@ -28,6 +28,49 @@ is the same as {
         create: create, 
         update: update 
     }
+
+~~~ Rendering forms conditionally using React trick
+- {user === null && loginForm()}
+- If the first statement evaluates to false, or is falsy, the second statement 
+    (generating the form) is not executed at all.
+- ternary operator can also be used
+
+~~~ Local storage
+- save user's login credentials to local sstorage
+- local storage is a key-value db in browser
+- use setItem method to save key-value to database
+    - e.g. window.localStorage.setItem('name', 'juha tauriainen')
+        - first parameter is key
+        - second parameter is value
+- use getItem to get value of a key
+- use removeItem to remove a key
+- values saved to storage are DOMstrings
+    - parse to JSON first via JSON.stringify and then parse back with JSON.parse
+- logging out:
+    - use window.localStorage.removeItem('loggedNoteappUser') to get rid of specific user
+    - or use window.localStorage.clear() to empty localstorage completely
+
+~~~Child components
+- parent component has both opening and closing tags which surround a child component
+- can add any React element between opening and closing tags of parent component
+- access using props.children
+    - React automatically adds props.children and it always exists
+    - if component is defined with automatically closing tag (e.g. <Note />),
+        then props.children is empty array
+
+~~~
+const noteForm = () => ( // parentheses denote grouping of multiline code 
+  // so semicolon is not inserted into wrong place
+    <Togglable buttonLabel='new note'>
+      <NoteForm createNote={addNote} />
+    </Togglable>
+)
+
+~~~ References to components with ref
+- useRef hook creates reference assigned to a component
+    - ensures same references is kept throughout re-renders of component
+-
+
 
 ~~~COMMANDS
 npm install axios
@@ -44,4 +87,3 @@ npm run server
 "server": "json-server -p3001 --watch db.json"
 p3001 is because p3000 is usually taken (e.g. by create-react-app)
 -run at root of application
-
