@@ -340,3 +340,15 @@ Sending token from browser to server:
   - method also decodes token -> returns Object which token was based on
     - decoded object contains username and id fields
 
+~~~ PropTypes
+- npm install prop-types
+- define expected and required props of a component
+- import and then after component put {nameOfComponent}.propTypes = {}
+- e.g.
+    LoginForm.propTypes = {
+      handleSubmit: PropTypes.func.isRequired,
+      handleUsernameChange: PropTypes.func.isRequired,
+      handlePasswordChange: PropTypes.func.isRequired,
+      username: PropTypes.string.isRequired,
+      password: PropTypes.string.isRequired
+    }

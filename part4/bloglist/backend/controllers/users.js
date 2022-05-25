@@ -19,7 +19,7 @@ usersRouter.post('/', async (request, response) => {
   const existingUser = await User.findOne({ username })
   if (existingUser) {
     return response.status(400).json({
-      error: 'username must be unique'
+      error: 'Username must be unique'
     })
   }
 
@@ -35,7 +35,7 @@ usersRouter.post('/', async (request, response) => {
 
   const savedUser = await user.save()
 
-  response.status(201).json(savedUser)
+  return response.status(201).json(savedUser)
 })
 
 module.exports = usersRouter
