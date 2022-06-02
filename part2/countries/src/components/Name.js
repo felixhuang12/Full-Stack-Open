@@ -1,9 +1,12 @@
 import React from 'react'
 
-const Name = ({name}) => {
+const Name = ({country, setCountries}) => {
     return(
         <div>
-            {name}
+            {country.name.common}
+            <button onClick={() => {
+                setCountries([country])
+            }}>show</button>
         </div>
     )
 }

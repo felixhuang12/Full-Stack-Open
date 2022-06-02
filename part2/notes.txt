@@ -18,7 +18,7 @@ components are all examples of side effects.
 - two parameters:
     - first: function/effect itself: run after every completed render
         - can choose to fire it only when certain values have changed
-    - second: specify how often effect is run
+    - second: array of dependencies in which effect hook should run if change
         - [] implies effect only executed when component is rendered for first time
 
 ~~~ object

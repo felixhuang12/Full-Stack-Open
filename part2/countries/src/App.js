@@ -9,16 +9,17 @@ const App = () => {
   const [allCountries, setAllCountries] = useState([])
   const [filter, setFilter] = useState('')
 
-  const data = () => {
+  useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all').then(res => {
       setAllCountries(res.data)
     })
-  }
-
-  useEffect(data, [])
+  }, [])
 
   const filterChange = (event) => {
     setFilter(event.target.value)
+  }
+
+  useEffect(() => {
     if (filter){
     const regex = new RegExp( filter, 'i' );
     const filteredCountries = () => 
@@ -27,12 +28,12 @@ const App = () => {
       )
     setCountries(filteredCountries)
     }
-  }
+  }, [filter, allCountries])
 
   return(
     <div>
       <Query filter={filter} setFilter={filterChange} />
-      <Display countries={countries} />
+      <Display countries={countries} setCountries={setCountries}/>
     </div>
   )
 }
