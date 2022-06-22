@@ -5,6 +5,9 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -39,6 +42,7 @@ const App = () => {
         setSuccessMessage(null)
       }, 3000)
     } catch (error) {
+      console.log(error)
       console.log(error.response.data.error)
       setErrorMessage(error.response.data.error)
       setTimeout(() => {
@@ -64,30 +68,36 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      <div>
-        <form onSubmit={handleLogin}>
-          <h2>Log in to Bloglist Application</h2>
-          <div>
-            Username
-              <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            Password
-              <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-            <button type="submit">Login</button>
-        </form>
-        <button onClick={() => setCreateUser(true)}>New? Create new account</button>
+      <div className='container-lg d-flex justify-content-center'>
+        <div className='p-1' >
+        <h2>Log in to Bloglist Application</h2>
+          <Form onSubmit={handleLogin}>
+            <Form.Group className='mb-3' controlId='formLoginUser'>
+                <Form.Label>Username</Form.Label>
+                <Form.Control 
+                  type="text" 
+                  value={username} 
+                  onChange={({ target }) => setUsername(target.value)}
+                />
+            </Form.Group>
+            <Form.Group className='mb-3' controlId='formLoginPassword'>
+                <Form.Label>Password</Form.Label>
+                <Form.Control 
+                  type="password" 
+                  value={password} 
+                  onChange={({ target }) => setPassword(target.value)}
+                />
+            </Form.Group>
+            <Button type="submit" variant="dark">Login</Button>
+          </Form>
+          <Button 
+            className='mt-2' 
+            onClick={() => setCreateUser(true)} 
+            variant="dark"
+          >
+            New? Click to create a new account
+          </Button>
+        </div>
       </div>
     )
   }
@@ -113,8 +123,7 @@ const App = () => {
         setNewUsername('')
         setNewPassword('')
         setConfirmPassword('')
-        setSuccessMessage(`Blog account with username ${response.username}
-        created.`)
+        setSuccessMessage(`Blog account with username ${response.username} created.`)
         setTimeout(() => {
           setSuccessMessage(null)
         }, 3000)
@@ -129,53 +138,55 @@ const App = () => {
 
   const createUserForm = () => {
     return (
-      <div>
-        <form onSubmit={handleCreateUser}>
-          <h2>Create New User</h2> 
-          <div>
-            Name
-            <input
-              type="text" 
-              value={name} 
-              name="new-name"
-              onChange={({target}) => setName(target.value)}
-            />
-          </div>
-          <div>
-            New username
-            <input
-              type="text" 
-              value={newUsername} 
-              name="new-username"
-              onChange={({target}) => setNewUsername(target.value)}
-            />
-          </div>
-          <div>
-            New password
-            <input
-              type="password" 
-              value={newPassword} 
-              name="new-password"
-              onChange={({target}) => setNewPassword(target.value)}
-            />
-          </div>
-          <div>
-            Confirm password
-            <input
-              type="password" 
-              value={confirmPassword} 
-              name="confirm-password"
-              onChange={({target}) => setConfirmPassword(target.value)}
-            />
-          </div>
-          <button type="submit">Create new user</button>
-        </form>
-        <button onClick={() => {
-          setCreateUser(false)
-          setNewUsername('')
-          setNewPassword('')
-          setConfirmPassword('')
-        }}>Cancel</button>
+      <div className='container-lg d-flex justify-content-center'>
+        <div className="p-1">
+          <Form onSubmit={handleCreateUser}>
+            <h2>Create New User</h2> 
+            <Form.Group className='mb-3' controlId='formNewUser'>
+              <Form.Label>Name</Form.Label>
+              <Form.Control 
+                type="text" 
+                value={name} 
+                placeholder='Lee Ji Eun'
+                onChange={({target}) => setName(target.value)}
+              />
+            </Form.Group>
+            <Form.Group className='mb-3' controlId='formNewUsername'>
+              <Form.Label>New username</Form.Label>
+              <Form.Control 
+                type="text" 
+                value={newUsername} 
+                placeholder='bigpaws16'
+                onChange={({target}) => setNewUsername(target.value)}
+              />
+            </Form.Group>
+            <Form.Group className='mb-3' controlId='formNewPassword'>
+              <Form.Label>New password</Form.Label>
+              <Form.Control 
+                type="password" 
+                value={newPassword} 
+                onChange={({target}) => setNewPassword(target.value)}
+              />
+            </Form.Group>
+            <Form.Group className='mb-3' controlId='formConfirmPassword'>
+              <Form.Label>Confirm password</Form.Label>
+              <Form.Control 
+                type="password" 
+                value={confirmPassword} 
+                onChange={({target}) => setConfirmPassword(target.value)}
+              />
+            </Form.Group>
+          </Form>
+          <Button type="submit" variant="dark">Create new user</Button>
+          <Button className="ms-2" variant="dark" onClick={() => {
+            setCreateUser(false)
+            setNewUsername('')
+            setNewPassword('')
+            setConfirmPassword('')
+          }}>
+            Cancel
+          </Button>
+        </div>
       </div>
     )
   }
@@ -211,10 +222,27 @@ const App = () => {
     }
   }
 
+  const updateBlog = async (blog, newBlog) => {
+    const response = await blogService.update(blog.id, newBlog)
+    console.log(response)
+    try {
+      setBlogs(blogs.map(b => b.id !== blog.id ? b : response))
+      setSuccessMessage('Blog updated')
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 3000)
+    } catch (err) {
+      console.log(err)
+      setTimeout(() => {
+        setErrorMessage(err)
+      }, 3000)
+    }
+  }
+
   const handleLike = async (blog) => {
     console.log(blog)
     const newObject = {
-      user: blog.id,
+      user: blog.user.id,
       likes: blog.likes+1,
       author: blog.author,
       title: blog.title,
@@ -255,7 +283,7 @@ const App = () => {
           <h3>Blogs</h3>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} handleLike={handleLike}
-             handleDelete={deleteBlog} />
+             handleDelete={deleteBlog} handleUpdate={updateBlog} />
           )}
         </div>
         

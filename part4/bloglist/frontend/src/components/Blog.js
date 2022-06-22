@@ -1,12 +1,27 @@
 import { React, useState } from 'react'
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
-const Blog = ({blog, handleLike, handleDelete}) => {
+const Blog = ({blog, handleLike, handleDelete, handleUpdate}) => {
   const [visible, setVisible] = useState(false)
+  const [updateVisible, setUpdateVisible] = useState(false)
+  const [newTitle, setNewTitle] = useState(blog.title)
+  const [newAuthor, setNewAuthor] = useState(blog.author)
+  const [newURL, setNewURL] = useState(blog.url)
+  const [newLikes, setNewLikes] = useState(blog.likes)
   const showWhenVisible = {display: visible ? '' : 'none'}
   const hideWhenVisible = {display: visible ? 'none' : ''}
+  const showUpdateWhenVisible = {display: updateVisible ? '' : 'none'}
+  const hideUpdateWhenVisible = {display: updateVisible ? 'none' : ''}
 
   const toggleVisibility = () => {
     setVisible(!visible)
+  }
+
+  const toggleUpdateForm = () => {
+    setUpdateVisible(!updateVisible)
   }
 
   const blogStyle = {
@@ -17,7 +32,7 @@ const Blog = ({blog, handleLike, handleDelete}) => {
     marginBottom: 5
   }
 
-  const showRemove = () => {
+  const showRemoveAndUpdate = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
     if (loggedUserJSON && blog.user){
       const user = JSON.parse(loggedUserJSON)
@@ -25,8 +40,56 @@ const Blog = ({blog, handleLike, handleDelete}) => {
         return (
           <div>
             <button onClick={() => handleDelete(blog)}>
-              remove
+              Remove
             </button>
+            <div style={hideUpdateWhenVisible}>
+              <Button onClick={toggleUpdateForm}>Update</Button>
+            </div>
+            <div style={showUpdateWhenVisible}>
+              <Form onSubmit={() => handleUpdate(blog, {
+                user: blog.user.id,
+                likes: newLikes,
+                title: newTitle,
+                author: newAuthor,
+                url: newURL
+              })} >
+                <h4>Update Blog</h4>
+                <Form.Group as={Row} className="ms-3" controlId="title">
+                  <Form.Label column sm="2">
+                    Title
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control type="text" value={newTitle} onChange={({target}) => setNewTitle(target.value)} />
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="ms-3" controlId="author">
+                  <Form.Label column sm="2">
+                    Author
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control type="text" value={newAuthor} onChange={({target}) => setNewAuthor(target.value)} />
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="ms-3" controlId="url">
+                  <Form.Label column sm="2">
+                    URL
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control type="text" value={newURL} onChange={({target}) => setNewURL(target.value)} />
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="ms-3" controlId="likes">
+                  <Form.Label column sm="2">
+                    Likes
+                  </Form.Label>
+                  <Col sm="10">
+                    <Form.Control type="number" value={newLikes} onChange={({target}) => setNewLikes(target.value)} />
+                  </Col>
+                </Form.Group>
+              <Button type="submit">Update</Button>
+              <Button onClick={toggleUpdateForm}>Cancel</Button>
+              </Form>
+            </div>
           </div>
         )        
       }
@@ -47,14 +110,15 @@ const Blog = ({blog, handleLike, handleDelete}) => {
           hide
         </button>
       <br/>
-        Url: {blog.url}
+        Url: 
+        <a href={blog.url}>{blog.url}</a>
         <br/> 
         Likes: {blog.likes}
         <button onClick={() => handleLike(blog)}>
           Like
         </button>
         <br/>
-        {showRemove()}
+        {showRemoveAndUpdate()}
       </div>
     </div>
   )  
