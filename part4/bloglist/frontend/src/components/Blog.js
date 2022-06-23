@@ -27,6 +27,7 @@ const Blog = ({blog, handleLike, handleDelete, handleUpdate}) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
+    marginRight: 15,
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
@@ -39,11 +40,13 @@ const Blog = ({blog, handleLike, handleDelete, handleUpdate}) => {
       if (blog.user.username === user.username){
         return (
           <div>
-            <button onClick={() => handleDelete(blog)}>
-              Remove
-            </button>
-            <div style={hideUpdateWhenVisible}>
-              <Button onClick={toggleUpdateForm}>Update</Button>
+            <div className='d-flex justify-content-start mt-2'>
+              <div style={hideUpdateWhenVisible}>
+                <Button className='mb-3' onClick={toggleUpdateForm} variant="outline-dark">Update</Button>
+              </div>
+              <Button className='ms-2 mb-3' variant="outline-danger" onClick={() => handleDelete(blog)}>
+                Remove
+              </Button>
             </div>
             <div style={showUpdateWhenVisible}>
               <Form onSubmit={() => handleUpdate(blog, {
@@ -53,7 +56,7 @@ const Blog = ({blog, handleLike, handleDelete, handleUpdate}) => {
                 author: newAuthor,
                 url: newURL
               })} >
-                <h4>Update Blog</h4>
+                <h5>Update Blog</h5>
                 <Form.Group as={Row} className="ms-3" controlId="title">
                   <Form.Label column sm="2">
                     Title
@@ -86,8 +89,8 @@ const Blog = ({blog, handleLike, handleDelete, handleUpdate}) => {
                     <Form.Control type="number" value={newLikes} onChange={({target}) => setNewLikes(target.value)} />
                   </Col>
                 </Form.Group>
-              <Button type="submit">Update</Button>
-              <Button onClick={toggleUpdateForm}>Cancel</Button>
+              <Button className='ms-3 mx-1 mb-3' type="submit" variant="outline-success">Update</Button>
+              <Button className='mx-1 mb-3' onClick={toggleUpdateForm} variant="outline-danger">Cancel</Button>
               </Form>
             </div>
           </div>
@@ -97,28 +100,31 @@ const Blog = ({blog, handleLike, handleDelete, handleUpdate}) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='ps-3' style={blogStyle}>
       <div style={hideWhenVisible}>
-        {blog.title} by {blog.author}
-        <button onClick={toggleVisibility}>
-          view
-        </button>
+        <div className='d-flex justify-content-start'>
+          <h5 className='mt-1'>{blog.title} by {blog.author}</h5>
+          <Button className='mb-2 ms-2'variant='outline-dark' onClick={toggleVisibility}>
+            View
+          </Button>
+        </div>
       </div>
       <div style={showWhenVisible}>
-      {blog.title} by {blog.author} 
-      <button onClick={toggleVisibility}>
-          hide
-        </button>
-      <br/>
-        Url: 
-        <a href={blog.url}>{blog.url}</a>
-        <br/> 
-        Likes: {blog.likes}
-        <button onClick={() => handleLike(blog)}>
-          Like
-        </button>
-        <br/>
-        {showRemoveAndUpdate()}
+        <div className='d-flex justify-content-start'>
+          <h5 className='mt-1'>{blog.title} by {blog.author}</h5>
+          <Button className='mb-2 ms-2'variant='outline-dark' onClick={toggleVisibility}>
+              Hide
+          </Button> 
+        </div>
+          <br/>
+          Url: <a href={blog.url}>{blog.url}</a>
+          <br/>
+            Likes: {blog.likes}
+          <Button className='m-2'variant='outline-success' onClick={() => handleLike(blog)}>
+            Like
+          </Button>
+          <br/>
+          {showRemoveAndUpdate()}
       </div>
     </div>
   )  

@@ -68,8 +68,8 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      <div className='container-lg d-flex justify-content-center'>
-        <div className='p-1' >
+      <div className='d-flex justify-content-center vh-100'>
+        <div className='p-1 align-self-center h-75'>
         <h2>Log in to Bloglist Application</h2>
           <Form onSubmit={handleLogin}>
             <Form.Group className='mb-3' controlId='formLoginUser'>
@@ -138,8 +138,8 @@ const App = () => {
 
   const createUserForm = () => {
     return (
-      <div className='container-lg d-flex justify-content-center'>
-        <div className="p-1">
+      <div className='d-flex justify-content-center vh-100'>
+        <div className="p-1 align-self-center h-75">
           <Form onSubmit={handleCreateUser}>
             <h2>Create New User</h2> 
             <Form.Group className='mb-3' controlId='formNewUser'>
@@ -223,24 +223,14 @@ const App = () => {
   }
 
   const updateBlog = async (blog, newBlog) => {
-    const response = await blogService.update(blog.id, newBlog)
-    console.log(response)
-    try {
-      setBlogs(blogs.map(b => b.id !== blog.id ? b : response))
-      setSuccessMessage('Blog updated')
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 3000)
-    } catch (err) {
-      console.log(err)
-      setTimeout(() => {
-        setErrorMessage(err)
-      }, 3000)
-    }
+    await blogService.update(blog.id, newBlog)
+    const res = await blogService.getAll()
+    setBlogs(res)
   }
 
   const handleLike = async (blog) => {
     console.log(blog)
+    console.log(blog.user)
     const newObject = {
       user: blog.user.id,
       likes: blog.likes+1,
@@ -256,7 +246,7 @@ const App = () => {
 
   const blogForm = () => {
     return (
-      <Togglable buttonLabel='New blog' ref={blogFormRef}>
+      <Togglable buttonLabel='New Blog' ref={blogFormRef}>
         <BlogForm createBlog={addBlog}
         />
       </Togglable>
@@ -268,19 +258,19 @@ const App = () => {
       return b.likes - a.likes
     })
     return (
-      <div>
-        <h2>Bloglist</h2>
-        <div>
-          {`${user.name} is logged in`}
-          <button onClick={handleLogout}>
-            logout
-          </button>
+      <div className='ms-3'>
+        <h1 className='d-flex justify-content-center mt-3'>Bloglist</h1>
+        <div className='d-flex justify-content-center'>
+          <div className='align-self-center'>{`${user.name} is logged in`}</div>
+          <Button className='ms-2' variant='outline-dark' onClick={handleLogout}>
+            Logout
+          </Button>
         </div>
         <div>
           {blogForm()}
         </div>
         <div>
-          <h3>Blogs</h3>
+          <h2>Blogs</h2>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} handleLike={handleLike}
              handleDelete={deleteBlog} handleUpdate={updateBlog} />
