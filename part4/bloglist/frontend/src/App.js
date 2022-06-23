@@ -176,9 +176,8 @@ const App = () => {
                 onChange={({target}) => setConfirmPassword(target.value)}
               />
             </Form.Group>
-          </Form>
-          <Button type="submit" variant="dark">Create new user</Button>
-          <Button className="ms-2" variant="dark" onClick={() => {
+            <Button type="submit" variant="dark">Create new user</Button>
+            <Button className="ms-2" variant="dark" onClick={() => {
             setCreateUser(false)
             setNewUsername('')
             setNewPassword('')
@@ -186,6 +185,7 @@ const App = () => {
           }}>
             Cancel
           </Button>
+          </Form>
         </div>
       </div>
     )
