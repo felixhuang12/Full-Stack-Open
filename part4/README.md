@@ -1,1 +1,1 @@
-node_modules
+https://bloglist-full-app.herokuapp.com/
