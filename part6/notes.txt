@@ -1,0 +1,7 @@
+~~~ Flux Architecture
+- state management whereby:
+    - the state is separated completely from the React-components into its own stores
+    - state in the store is not changed directly, but with different actions
+- when action changes the state of store, the views are rerendered
+- Redux library implements flux-architecture
+
